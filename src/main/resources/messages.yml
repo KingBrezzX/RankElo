@@ -1,0 +1,25 @@
+prefix: "&8[&bRankElo&8] &r"
+
+elo:
+  self: "&7Your Elo: &b%elo%"
+  player: "&f%player%&7's Elo: &b%elo%"
+
+rank:
+  self: "&7Your Rank: &b%rank%"
+  player: "&f%player%&7's Rank: &b%rank%"
+
+combat:
+  kill: "&a+%amount% Elo &7for killing &f%player%&7. Your Elo: &b%elo%"
+  death: "&c-%amount% Elo &7because you were killed by &f%player%&7. Your Elo: &b%elo%"
+
+admin:
+  set: "&aSet &f%player%&a's Elo to &b%elo%&a."
+  add: "&aAdded &b%amount% Elo &ato &f%player%&a."
+  reset: "&aReset &f%player%&a's Elo."
+  reload: "&aRankElo configuration reloaded."
+
+error:
+  player-not-found: "&cPlayer not found."
+  invalid-number: "&cInvalid Elo amount."
+  no-permission: "&cYou don't have permission."
+  usage: "&7Usage: &f/elo <info|set|add|reset|reload>"
