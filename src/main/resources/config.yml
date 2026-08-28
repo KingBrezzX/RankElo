@@ -1,3 +1,11 @@
+enabled-worlds:
+  - world
+  - world_nether
+  - world_the_end
+
+disabled-worlds:
+  - example_disabled_world
+
 elo:
   default: 1000
   kill: 25
@@ -5,22 +13,75 @@ elo:
   min: 0
 
 ranks:
-  LT1: 0
-  LT2: 200
-  LT3: 400
-  LT4: 600
-  LT5: 800
-  HT1: 1000
-  HT2: 1200
-  HT3: 1400
-  HT4: 1600
-  HT5: 1800
+  LT1:
+    elo: 0
+    color: "&7"
 
-unranked-name: "Unranked"
+  LT2:
+    elo: 200
+    color: "&f"
+
+  LT3:
+    elo: 400
+    color: "&a"
+
+  LT4:
+    elo: 600
+    color: "&2"
+
+  LT5:
+    elo: 800
+    color: "&b"
+
+  HT1:
+    elo: 1000
+    color: "&3"
+
+  HT2:
+    elo: 1200
+    color: "&9"
+
+  HT3:
+    elo: 1400
+    color: "&5"
+
+  HT4:
+    elo: 1600
+    color: "&d"
+
+  HT5:
+    elo: 1800
+    color: "&6"
+
+unranked:
+  name: "Unranked"
+  color: "&7"
 
 messages:
   prefix: "&8[&bRankElo&8] &r"
-  elo: "&7Your Elo: &b%elo%"
-  rank: "&7Your Rank: &b%rank%"
-  kill: "&a+%amount% Elo &7for killing &f%player%"
-  death: "&c-%amount% Elo &7because you were killed by &f%player%"
+
+  elo:
+    self: "&7Your Elo: &b%elo%"
+    player: "&f%player%&7's Elo: &b%elo%"
+
+  rank:
+    self: "&7Your Rank: %rank_color%%rank%"
+    player: "&f%player%&7's Rank: %rank_color%%rank%"
+
+  kill: "&a+%amount% Elo &7for killing &f%player%&7. Your Elo: &b%elo%"
+
+  death: "&c-%amount% Elo &7because you were killed by &f%player%&7. Your Elo: &b%elo%"
+
+  promotion: "&a%player% &7has ranked up to %rank_color%%rank%&7!"
+
+  demotion: "&c%player% &7has dropped to %rank_color%%rank%&7!"
+
+  no-permission: "&cYou don't have permission."
+
+  player-not-found: "&cPlayer not found."
+
+  invalid-number: "&cInvalid Elo amount."
+
+  reload: "&aRankElo configuration reloaded."
+
+  usage: "&7Usage: &f/elo <info|set|add|reset|reload>"
