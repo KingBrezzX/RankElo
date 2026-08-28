@@ -1,5 +1,6 @@
 package net.rankelo.plugin.utils;
 
+import net.rankelo.plugin.RankEloPlugin;
 import org.bukkit.ChatColor;
 
 public final class MessageUtil {
@@ -7,42 +8,77 @@ public final class MessageUtil {
     private MessageUtil() {
     }
 
-    public static String color(String message) {
-        if (message == null) {
+    public static String color(String text) {
+        if (text == null) {
             return "";
         }
 
-        return ChatColor.translateAlternateColorCodes('&', message);
+        return ChatColor.translateAlternateColorCodes('&', text);
     }
 
-    public static String replace(String message, String key, Object value) {
-        if (message == null) {
+    public static String get(
+            RankEloPlugin plugin,
+            String path
+    ) {
+        return color(
+                plugin.getConfig().getString(path, "")
+        );
+    }
+
+    public static String get(
+            RankEloPlugin plugin,
+            String path,
+            String key,
+            Object value
+    ) {
+        return replace(
+                get(plugin, path),
+                key,
+                value
+        );
+    }
+
+    public static String replace(
+            String text,
+            String key,
+            Object value
+    ) {
+        if (text == null) {
             return "";
         }
 
-        return message.replace(
+        return text.replace(
                 "%" + key + "%",
                 String.valueOf(value)
         );
     }
 
-    public static String format(String message, Object... replacements) {
-        if (message == null) {
+    public static String format(
+            String text,
+            Object... values
+    ) {
+        if (text == null) {
             return "";
         }
 
-        String result = message;
+        String result = text;
 
-        for (int i = 0; i + 1 < replacements.length; i += 2) {
-            String key = String.valueOf(replacements[i]);
-            String value = String.valueOf(replacements[i + 1]);
-
+        for (int i = 0; i + 1 < values.length; i += 2) {
             result = result.replace(
-                    "%" + key + "%",
-                    value
+                    "%" + values[i] + "%",
+                    String.valueOf(values[i + 1])
             );
         }
 
         return color(result);
+    }
+
+    public static String prefix(
+            RankEloPlugin plugin
+    ) {
+        return get(
+                plugin,
+                "messages.prefix"
+        );
     }
 }
