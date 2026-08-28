@@ -1,0 +1,24 @@
+name: RankElo
+version: '1.0.0'
+main: net.rankelo.plugin.RankEloPlugin
+api-version: '1.21'
+author: RankElo
+description: Professional Elo-based ranking and PvP statistics plugin.
+
+softdepend:
+  - PlaceholderAPI
+
+commands:
+  elo:
+    description: View and manage Elo
+    usage: /elo [info|set|add|reset|reload]
+    permission: rankelo.use
+
+permissions:
+  rankelo.use:
+    description: Allows use of the /elo command
+    default: true
+
+  rankelo.admin:
+    description: Allows administration of Elo
+    default: op
