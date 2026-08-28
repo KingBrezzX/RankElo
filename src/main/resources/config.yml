@@ -1,0 +1,26 @@
+elo:
+  default: 1000
+  kill: 25
+  death: 15
+  min: 0
+
+ranks:
+  LT1: 0
+  LT2: 200
+  LT3: 400
+  LT4: 600
+  LT5: 800
+  HT1: 1000
+  HT2: 1200
+  HT3: 1400
+  HT4: 1600
+  HT5: 1800
+
+unranked-name: "Unranked"
+
+messages:
+  prefix: "&8[&bRankElo&8] &r"
+  elo: "&7Your Elo: &b%elo%"
+  rank: "&7Your Rank: &b%rank%"
+  kill: "&a+%amount% Elo &7for killing &f%player%"
+  death: "&c-%amount% Elo &7because you were killed by &f%player%"
