@@ -15,21 +15,30 @@ public class RankEloPlugin extends JavaPlugin {
     public void onEnable() {
         saveDefaultConfig();
 
-        this.eloManager = new EloManager(this);
+        eloManager = new EloManager(this);
 
-        Bukkit.getPluginManager().registerEvents(new CombatListener(this), this);
+        Bukkit.getPluginManager().registerEvents(
+                new CombatListener(this),
+                this
+        );
 
-        EloCommand eloCommand = new EloCommand(this);
-        getCommand("elo").setExecutor(eloCommand);
-
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new RankPlaceholder(this).register();
-            getLogger().info("PlaceholderAPI terdeteksi, placeholder %rank_lvl% & %rank_elo% aktif.");
-        } else {
-            getLogger().warning("PlaceholderAPI tidak ditemukan, placeholder %rank_lvl% & %rank_elo% tidak akan berfungsi.");
+        if (getCommand("elo") != null) {
+            getCommand("elo").setExecutor(
+                    new EloCommand(this)
+            );
         }
 
-        getLogger().info("RankElo berhasil diaktifkan.");
+        if (Bukkit.getPluginManager()
+                .getPlugin("PlaceholderAPI") != null) {
+
+            new RankPlaceholder(this).register();
+
+            getLogger().info(
+                    "PlaceholderAPI hooked successfully."
+            );
+        }
+
+        getLogger().info("RankElo enabled.");
     }
 
     @Override
@@ -37,7 +46,8 @@ public class RankEloPlugin extends JavaPlugin {
         if (eloManager != null) {
             eloManager.save();
         }
-        getLogger().info("RankElo dinonaktifkan.");
+
+        getLogger().info("RankElo disabled.");
     }
 
     public EloManager getEloManager() {
