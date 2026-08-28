@@ -1,101 +1,163 @@
 package net.rankelo.plugin.managers;
 
 import net.rankelo.plugin.RankEloPlugin;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class EloManager {
 
     private final RankEloPlugin plugin;
+    private final RankManager rankManager;
+
     private final Map<UUID, Integer> eloData = new HashMap<>();
+
+    private final File dataFile;
+    private YamlConfiguration dataConfig;
 
     public EloManager(RankEloPlugin plugin) {
         this.plugin = plugin;
+        this.rankManager = new RankManager(plugin);
+
+        if (!plugin.getDataFolder().exists()) {
+            plugin.getDataFolder().mkdirs();
+        }
+
+        this.dataFile = new File(
+                plugin.getDataFolder(),
+                "players.yml"
+        );
+
+        this.dataConfig =
+                YamlConfiguration.loadConfiguration(dataFile);
+
         load();
     }
 
-    public int getElo(Player player) {
-        return getElo(player.getUniqueId());
-    }
-
     public int getElo(UUID uuid) {
-        return eloData.getOrDefault(uuid, plugin.getConfig().getInt("elo.default", 0));
-    }
-
-    public void setElo(Player player, int elo) {
-        setElo(player.getUniqueId(), elo);
+        return eloData.getOrDefault(
+                uuid,
+                plugin.getConfig().getInt(
+                        "elo.default",
+                        1000
+                )
+        );
     }
 
     public void setElo(UUID uuid, int elo) {
-        int minimum = plugin.getConfig().getInt("elo.min", 0);
-        eloData.put(uuid, Math.max(minimum, elo));
+        int minimum = plugin.getConfig().getInt(
+                "elo.min",
+                0
+        );
+
+        eloData.put(
+                uuid,
+                Math.max(minimum, elo)
+        );
     }
 
-    public void addElo(Player player, int amount) {
-        setElo(player, getElo(player) + amount);
+    public void addElo(UUID uuid, int amount) {
+        setElo(
+                uuid,
+                getElo(uuid) + amount
+        );
     }
 
-    public void removeElo(Player player, int amount) {
-        setElo(player, getElo(player) - amount);
-    }
-
-    public String getRank(Player player) {
-        return getRank(getElo(player));
+    public void removeElo(UUID uuid, int amount) {
+        setElo(
+                uuid,
+                getElo(uuid) - amount
+        );
     }
 
     public String getRank(int elo) {
-        FileConfiguration config = plugin.getConfig();
+        return rankManager.getRank(elo);
+    }
 
-        String currentRank = config.getString("unranked-name", "Unranked");
+    public String getRank(UUID uuid) {
+        return rankManager.getRank(
+                getElo(uuid)
+        );
+    }
 
-        if (!config.isConfigurationSection("ranks")) {
-            return currentRank;
-        }
+    public String getRankColor(String rank) {
+        return rankManager.getRankColor(rank);
+    }
 
-        for (String rank : config.getConfigurationSection("ranks").getKeys(false)) {
-            int requiredElo = config.getInt("ranks." + rank);
+    public String getRankColor(UUID uuid) {
+        return rankManager.getRankColor(
+                getRank(uuid)
+        );
+    }
 
-            if (elo >= requiredElo) {
-                currentRank = rank;
-            }
-        }
+    public RankManager getRankManager() {
+        return rankManager;
+    }
 
-        return currentRank;
+    public void reload() {
+        rankManager.load();
+        load();
     }
 
     public void load() {
         eloData.clear();
 
-        FileConfiguration data = plugin.getConfig();
-
-        if (!data.isConfigurationSection("players")) {
+        if (!dataFile.exists()) {
             return;
         }
 
-        for (String uuidString : data.getConfigurationSection("players").getKeys(false)) {
+        dataConfig =
+                YamlConfiguration.loadConfiguration(dataFile);
+
+        if (!dataConfig.isConfigurationSection("players")) {
+            return;
+        }
+
+        for (String key :
+                dataConfig
+                        .getConfigurationSection("players")
+                        .getKeys(false)) {
+
             try {
-                UUID uuid = UUID.fromString(uuidString);
-                int elo = data.getInt("players." + uuidString);
+                UUID uuid = UUID.fromString(key);
+
+                int elo = dataConfig.getInt(
+                        "players." + key
+                );
+
                 eloData.put(uuid, elo);
-            } catch (IllegalArgumentException ignored) {
-                plugin.getLogger().warning("Invalid UUID in Elo data: " + uuidString);
+
+            } catch (IllegalArgumentException exception) {
+                plugin.getLogger().warning(
+                        "Invalid UUID in players.yml: "
+                                + key
+                );
             }
         }
     }
 
     public void save() {
-        FileConfiguration data = plugin.getConfig();
+        dataConfig = new YamlConfiguration();
 
-        data.set("players", null);
+        for (Map.Entry<UUID, Integer> entry :
+                eloData.entrySet()) {
 
-        for (Map.Entry<UUID, Integer> entry : eloData.entrySet()) {
-            data.set("players." + entry.getKey(), entry.getValue());
+            dataConfig.set(
+                    "players." + entry.getKey(),
+                    entry.getValue()
+            );
         }
 
-        plugin.saveConfig();
+        try {
+            dataConfig.save(dataFile);
+        } catch (IOException exception) {
+            plugin.getLogger().severe(
+                    "Failed to save players.yml: "
+                            + exception.getMessage()
+            );
+        }
     }
-            }
+}
