@@ -32,11 +32,8 @@ public class CombatListener implements Listener {
             return;
         }
 
-        if (!WorldUtil.isEnabled(plugin, victim.getWorld())) {
-            return;
-        }
-
-        if (!WorldUtil.isEnabled(plugin, killer.getWorld())) {
+        if (!WorldUtil.isEnabled(plugin, victim.getWorld())
+                || !WorldUtil.isEnabled(plugin, killer.getWorld())) {
             return;
         }
 
@@ -76,13 +73,7 @@ public class CombatListener implements Listener {
                 )
         );
 
-        if (!killerOldRank.equals(killerNewRank)
-                && plugin.getConfig().getBoolean(
-                "messages.promotion" != null
-                        ? "broadcast.promotion"
-                        : "broadcast.promotion",
-                true)) {
-
+        if (!killerOldRank.equals(killerNewRank)) {
             Bukkit.broadcastMessage(
                     MessageUtil.format(
                             MessageUtil.get(
@@ -97,11 +88,7 @@ public class CombatListener implements Listener {
             );
         }
 
-        if (!victimOldRank.equals(victimNewRank)
-                && plugin.getConfig().getBoolean(
-                "broadcast.demotion",
-                true)) {
-
+        if (!victimOldRank.equals(victimNewRank)) {
             Bukkit.broadcastMessage(
                     MessageUtil.format(
                             MessageUtil.get(
@@ -116,4 +103,4 @@ public class CombatListener implements Listener {
             );
         }
     }
-                                                     }
+                        }
